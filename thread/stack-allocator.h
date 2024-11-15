@@ -39,9 +39,9 @@ size_t pooled_stack_trim_current_vcpu(size_t keep_size);
 size_t pooled_stack_trim_threshold(size_t threshold);
 
 void set_photon_thread_stack_allocator(
-    Delegate<void*, size_t> photon_thread_alloc = {
+    PDelegate<void*, size_t> photon_thread_alloc = {
         &default_photon_thread_stack_alloc, nullptr},
-    Delegate<void, void*, size_t> photon_thread_dealloc = {
+    PDelegate<void, void*, size_t> photon_thread_dealloc = {
         &default_photon_thread_stack_dealloc, nullptr});
 inline void use_pooled_stack_allocator() {
     set_photon_thread_stack_allocator({&pooled_stack_alloc, nullptr},

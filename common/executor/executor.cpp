@@ -17,7 +17,7 @@ namespace photon {
 class Executor::ExecutorImpl {
 public:
     using CBList =
-        common::RingChannel<LockfreeMPMCRingQueue<Delegate<void>, 32UL * 1024>>;
+        common::RingChannel<LockfreeMPMCRingQueue<PDelegate<void>, 32UL * 1024>>;
     std::unique_ptr<std::thread> th;
     photon::thread *pth = nullptr;
     CBList queue;
@@ -41,7 +41,7 @@ public:
     }
 
     struct CallArg {
-        Delegate<void> task;
+        PDelegate<void> task;
         photon::thread *backth;
     };
 
@@ -92,7 +92,7 @@ Executor::Executor(create_on_current_vcpu) : e(new Executor::ExecutorImpl()) {}
 
 Executor::~Executor() { delete e; }
 
-void Executor::_issue(ExecutorImpl *e, Delegate<void> act) {
+void Executor::_issue(ExecutorImpl *e, PDelegate<void> act) {
     e->queue.send<ThreadPause>(act);
 }
 

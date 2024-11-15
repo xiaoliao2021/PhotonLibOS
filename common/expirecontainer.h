@@ -240,12 +240,12 @@ protected:
     //     concurrent construction of objects with the same key;
     // (2) construction of the object itself, and possibly do
     //     clean-up in case of failure
-    Item* ref_acquire(const Item& key_item, Delegate<void, void*> ctor,
+    Item* ref_acquire(const Item& key_item, PDelegate<void, void*> ctor,
                       uint64_t failure_cooldown = 0);
 
     int ref_release(ItemPtr item, bool recycle = false);
 
-    void* acquire(const Item& key_item, Delegate<void, void*> ctor,
+    void* acquire(const Item& key_item, PDelegate<void, void*> ctor,
                   uint64_t failure_cooldown = 0) {
         auto ret = ref_acquire(key_item, ctor, failure_cooldown);
         return ret ? ret->_obj : nullptr;

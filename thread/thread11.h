@@ -119,7 +119,7 @@ namespace photon {
 
     template<typename Callable> inline
     int thread_usleep_defer(uint64_t timeout, Callable&& callback) {
-        Delegate<void> delegate(callback);
+        PDelegate<void> delegate(callback);
         return thread_usleep_defer(timeout, delegate._func, delegate._obj);
     }
 

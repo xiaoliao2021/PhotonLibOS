@@ -35,7 +35,7 @@ namespace fs
 {
     static EventLoop* evloop = nullptr;
     using Queue =
-        common::RingChannel<LockfreeSPSCRingQueue<Delegate<void>, 65536>>;
+        common::RingChannel<LockfreeSPSCRingQueue<PDelegate<void>, 65536>>;
 
     class ExportBase
     {
@@ -45,7 +45,7 @@ namespace fs
         static Queue op_queue;
         static int ref;
         static condition_variable cond;
-        static Delegate<void> op;
+        static PDelegate<void> op;
         static ThreadPoolBase* pool;
         template<typename Func>
         static void perform_helper(void* arg) {
@@ -59,7 +59,7 @@ namespace fs
             {
                 SCOPED_LOCK(lock);
                 op_queue.send(
-                    Delegate<void>(&ExportBase::perform_helper<Func>, act));
+                    PDelegate<void>(&ExportBase::perform_helper<Func>, act));
             }
         }
         static int wait4events(void*, EventLoop*)
@@ -139,7 +139,7 @@ namespace fs
     __attribute__((visibility("hidden"))) Queue ExportBase::op_queue;
     __attribute__((visibility("hidden"))) int ExportBase::ref = 1;
     __attribute__((visibility("hidden"))) condition_variable ExportBase::cond;
-    __attribute__((visibility("hidden"))) Delegate<void> ExportBase::op;
+    __attribute__((visibility("hidden"))) PDelegate<void> ExportBase::op;
     __attribute__((visibility("hidden"))) ThreadPoolBase* ExportBase::pool = nullptr;
 
 #define PERFORM(ID, expr) \

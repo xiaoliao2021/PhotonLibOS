@@ -100,7 +100,7 @@ struct RCUDomain {
     }
 
     template <typename T>
-    void call_rcu(T *data, Delegate<void, T *> func) {
+    void call_rcu(T *data, PDelegate<void, T *> func) {
         auto x = ctr.fetch_add(1, std::memory_order_acq_rel);
         if (reader->get_gp()) reader->quiescent();
         photon::thread_create11([x, data, func, this]() {
@@ -155,7 +155,7 @@ struct RCUPtr {
     }
     // async wait for grace period
     void rcu_call(T *old, RCUDomain *domain = nullptr,
-                  Delegate<void, T *> func = {nullptr,
+                  PDelegate<void, T *> func = {nullptr,
                                               &RCUPtr::__default_deleter}) {
         if (!domain) domain = global_rcu_domain();
         domain->call_rcu(old, func);

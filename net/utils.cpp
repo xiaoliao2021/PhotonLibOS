@@ -72,7 +72,7 @@ IPAddr gethostbypeer(std::string_view domain) {
     return gethostbypeer(remote);
 }
 
-int _gethostbyname(std::string_view name, Delegate<int, IPAddr> append_op) {
+int _gethostbyname(std::string_view name, PDelegate<int, IPAddr> append_op) {
     if (name.empty()) return -1;
     addrinfo* result = nullptr;
     addrinfo hints = {};
@@ -265,7 +265,7 @@ protected:
     };
     using IPAddrList = intrusive_list<IPAddrNode>;
 
-    IPAddr do_resolve(std::string_view host, Delegate<bool, IPAddr> filter) {
+    IPAddr do_resolve(std::string_view host, PDelegate<bool, IPAddr> filter) {
         auto ctr = [&]() -> IPAddrList* {
             auto addrs = new IPAddrList();
             photon::semaphore sem;
@@ -314,7 +314,7 @@ public:
         return do_resolve(host, nullptr);
     }
 
-    IPAddr resolve_filter(std::string_view host, Delegate<bool, IPAddr> filter) override {
+    IPAddr resolve_filter(std::string_view host, PDelegate<bool, IPAddr> filter) override {
         return do_resolve(host, filter);
     }
 

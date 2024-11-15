@@ -43,7 +43,7 @@ public:
     photon::semaphore ready_vcpu;
     photon::condition_variable exit_cv;
     photon::common::RingChannel<
-        LockfreeMPMCRingQueue<Delegate<void>, RING_SIZE>>
+        LockfreeMPMCRingQueue<PDelegate<void>, RING_SIZE>>
         ring;
     int mode;
 
@@ -67,10 +67,10 @@ public:
         while (vcpus.size()) exit_cv.wait(lock, 1UL * 1000);
     }
 
-    void enqueue(Delegate<void> call) { ring.send<PhotonPause>(call); }
+    void enqueue(PDelegate<void> call) { ring.send<PhotonPause>(call); }
 
     template <typename Context>
-    void do_call(Delegate<void> call) {
+    void do_call(PDelegate<void> call) {
         Awaiter<Context> aop;
         auto task = [call, &aop] {
             call();
@@ -105,7 +105,7 @@ public:
     }
 
     struct TaskLB {
-        Delegate<void> task;
+        PDelegate<void> task;
         std::atomic<uint64_t> *count;
     };
 
@@ -168,19 +168,19 @@ WorkPool::WorkPool(size_t vcpu_num, int ev_engine, int io_engine, int mode)
 WorkPool::~WorkPool() {}
 
 template <>
-void WorkPool::do_call<AutoContext>(Delegate<void> call) {
+void WorkPool::do_call<AutoContext>(PDelegate<void> call) {
     pImpl->do_call<AutoContext>(call);
 }
 template <>
-void WorkPool::do_call<StdContext>(Delegate<void> call) {
+void WorkPool::do_call<StdContext>(PDelegate<void> call) {
     pImpl->do_call<StdContext>(call);
 }
 template <>
-void WorkPool::do_call<PhotonContext>(Delegate<void> call) {
+void WorkPool::do_call<PhotonContext>(PDelegate<void> call) {
     pImpl->do_call<PhotonContext>(call);
 }
 
-void WorkPool::enqueue(Delegate<void> call) { pImpl->enqueue(call); }
+void WorkPool::enqueue(PDelegate<void> call) { pImpl->enqueue(call); }
 photon::vcpu_base *WorkPool::get_vcpu_in_pool(size_t index) {
     return pImpl->get_vcpu_in_pool(index);
 }

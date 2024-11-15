@@ -72,6 +72,6 @@ int fini();
 /**
  * @brief add callbacks on fini()
  */
-void fini_hook(Delegate<void> handler);
+void fini_hook(PDelegate<void> handler);
 
 }

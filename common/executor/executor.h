@@ -101,7 +101,7 @@ protected:
 
     Executor(create_on_current_vcpu);
 
-    static void _issue(ExecutorImpl *e, Delegate<void> cb);
+    static void _issue(ExecutorImpl *e, PDelegate<void> cb);
 };
 
 }  // namespace photon

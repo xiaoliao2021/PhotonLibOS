@@ -39,7 +39,7 @@ enum HTTPFileFlags {
         0xF02,  // const char* ... for url param (concat by '?' in url)
 };
 
-using FileOpenCallback = Delegate<void, const char*, IFile*>;
+using FileOpenCallback = PDelegate<void, const char*, IFile*>;
 
 /**
  * @brief create httpfs object

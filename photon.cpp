@@ -113,12 +113,12 @@ int init(uint64_t event_engine, uint64_t io_engine, const PhotonOptions& options
     return __photon_init(event_engine, io_engine, options);
 }
 
-static std::vector<Delegate<void>>& get_hook_vector() {
-    thread_local std::vector<Delegate<void>> hooks;
+static std::vector<PDelegate<void>>& get_hook_vector() {
+    thread_local std::vector<PDelegate<void>> hooks;
     return hooks;
 }
 
-void fini_hook(Delegate<void> handler) {
+void fini_hook(PDelegate<void> handler) {
     get_hook_vector().emplace_back(handler);
 }
 

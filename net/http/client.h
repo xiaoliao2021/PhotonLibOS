@@ -63,7 +63,7 @@ public:
         std::string_view uds_path;                // If set, Unix Domain Socket will be used instead of TCP.
                                                   // URL should still be the format of http://localhost/xxx
         IStream* body_stream = nullptr;                 // use body_stream as body
-        using BodyWriter = Delegate<ssize_t, Request*>; // or call body_writer if body_stream
+        using BodyWriter = PDelegate<ssize_t, Request*>; // or call body_writer if body_stream
         BodyWriter body_writer = {};                    // is not set
 
         static Operation* create(Client* c, Verb v, std::string_view url,

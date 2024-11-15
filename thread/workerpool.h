@@ -113,8 +113,8 @@ protected:
     // send delegate to run at a workerthread,
     // Caller should keep callable object and resources alive
     template<typename Context>
-    void do_call(Delegate<void> call);
-    void enqueue(Delegate<void> call);
+    void do_call(PDelegate<void> call);
+    void enqueue(PDelegate<void> call);
     photon::vcpu_base* get_vcpu_in_pool(size_t index);
 
     template<typename Task>

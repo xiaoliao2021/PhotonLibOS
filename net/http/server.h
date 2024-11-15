@@ -36,7 +36,7 @@ enum class Protocol {
     HTTPS
 };
 
-using DelegateHTTPHandler = Delegate<int, Request&, Response&, std::string_view>;
+using DelegateHTTPHandler = PDelegate<int, Request&, Response&, std::string_view>;
 
 class HTTPHandler : public Object {
 public:
@@ -60,8 +60,8 @@ public:
 class Client;
 
 // modify body is not allowed
-using Director = Delegate<int, Request&, Request&>;
-using Modifier = Delegate<int, Response&, Response&>;
+using Director = PDelegate<int, Request&, Request&>;
+using Modifier = PDelegate<int, Response&, Response&>;
 
 // handler will ignore @ignore_prefix in target prefix
 HTTPHandler* new_fs_handler(fs::IFileSystem* fs);

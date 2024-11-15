@@ -32,14 +32,14 @@ struct Delegate_Base { };
 // `R (*)(void*, Ts...)`, or a member function of class U `R (U::*)(Ts...)`.
 // std::function<void(Ts...)> is not used, as it's less efficient.
 template<typename R, typename...Ts>
-struct Delegate : public Delegate_Base
+struct PDelegate : public Delegate_Base
 {
     using Func = R (*)(void*, Ts...);
     using Func0= R (*)(Ts...);
     void* _obj = nullptr;
     Func _func = nullptr;
 
-    Delegate() = default;
+    PDelegate() = default;
 
     template<typename U>    // U's Member Function
     using UMFunc = R (U::*)(Ts...);
@@ -50,30 +50,30 @@ struct Delegate : public Delegate_Base
     template<typename U>    // Function with U* as the 1st argument
     using UFunc  = R (*)(U*, Ts...);
 
-    constexpr Delegate(void* obj, Func func) : _obj(obj), _func(func) {}
-    constexpr Delegate(Func func, void* obj) : _obj(obj), _func(func) {}
-    constexpr Delegate(Func0 func0) : _obj(nullptr), _func((Func&)func0) {}
+    constexpr PDelegate(void* obj, Func func) : _obj(obj), _func(func) {}
+    constexpr PDelegate(Func func, void* obj) : _obj(obj), _func(func) {}
+    constexpr PDelegate(Func0 func0) : _obj(nullptr), _func((Func&)func0) {}
 
     template<typename U>
-    constexpr Delegate(U* obj, UFunc<U> func) : _obj(obj), _func((Func&)func) {}
+    constexpr PDelegate(U* obj, UFunc<U> func) : _obj(obj), _func((Func&)func) {}
 
     template<typename U>
-    Delegate(U* obj, UMFunc<U> func)    { bind(obj, func); }
+    PDelegate(U* obj, UMFunc<U> func)    { bind(obj, func); }
 
     template<typename U>
-    Delegate(U* obj, UCMFunc<U> func)   { bind(obj, func); }
+    PDelegate(U* obj, UCMFunc<U> func)   { bind(obj, func); }
 
     template<typename T, typename U, ENABLE_IF_BASE_OF(U, T)>
-    Delegate(T* obj, UMFunc<U> func)    { bind<U>(obj, func); }
+    PDelegate(T* obj, UMFunc<U> func)    { bind<U>(obj, func); }
 
     template<typename T, typename U, ENABLE_IF_BASE_OF(U, T)>
-    Delegate(T* obj, UCMFunc<U> func)   { bind<U>(obj, func); }
+    PDelegate(T* obj, UCMFunc<U> func)   { bind<U>(obj, func); }
 
     #define ENABLE_IF_NOT_CB(U) \
         ENABLE_IF_NOT_BASE_OF(Delegate_Base, U)
 
     template<typename U, ENABLE_IF_NOT_CB(U)>
-    /*explicit*/ Delegate(U& obj)
+    /*explicit*/ PDelegate(U& obj)
     {
         bind(&obj, &U::operator());
     }
@@ -105,7 +105,7 @@ struct Delegate : public Delegate_Base
     template<typename U, ENABLE_IF_NOT_CB(U)>
     void bind(U& obj)                   { bind<U>(&obj, &U::operator()); }
 
-    void bind(const Delegate& rhs)      { _func = rhs._func; _obj = rhs._obj; }
+    void bind(const PDelegate& rhs)      { _func = rhs._func; _obj = rhs._obj; }
 
     template<typename U, ENABLE_IF_NOT_CB(U)>
     void bind(U&& obj) = delete;        // not allow to bind to a rvalue (temp) object
@@ -125,17 +125,17 @@ struct Delegate : public Delegate_Base
         return fire(args...);
     }
 
-    bool operator==(const Delegate& rhs) const {
+    bool operator==(const PDelegate& rhs) const {
         return _obj == rhs._obj && _func == rhs._func;
     }
 
-    bool operator!=(const Delegate& rhs) const {
+    bool operator!=(const PDelegate& rhs) const {
         return !(*this == rhs);
     }
 };
 
 template<typename...Ts>
-using Callback = Delegate<int, Ts...>;
+using Callback = PDelegate<int, Ts...>;
 
 namespace photon {
 
@@ -146,7 +146,7 @@ namespace photon {
 const int64_t DELETE_CLOSURE = -1234567890;
 
 template<typename...ARGS> // closure must return an int64
-struct Closure : public Delegate<int64_t, ARGS...> {
+struct Closure : public PDelegate<int64_t, ARGS...> {
     template<typename T>
     explicit Closure(T* pfunctor) {
         bind(pfunctor);
@@ -154,7 +154,7 @@ struct Closure : public Delegate<int64_t, ARGS...> {
 
     Closure() = default;
 
-    using base = Delegate<int64_t, ARGS...>;
+    using base = PDelegate<int64_t, ARGS...>;
     using base::base;
 
     template<typename T>

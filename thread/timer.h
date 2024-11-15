@@ -28,7 +28,7 @@ namespace photon
         // the prototype of timer entry function
         // return value will be used as the next timeout,
         // 0 for default_timeout (given in the ctor)
-        using Entry = Delegate<uint64_t>;
+        using Entry = PDelegate<uint64_t>;
 
         // Create a timer object with `default_timedout` in usec, callback function `on_timer`,
         // and callback argument `arg`. The timer object is implemented as a special thread, so

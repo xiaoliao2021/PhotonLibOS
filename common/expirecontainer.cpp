@@ -75,7 +75,7 @@ bool ExpireContainerBase::keep_alive(const Item& x, bool insert_if_not_exists) {
 }
 
 auto ObjectCacheBase::ref_acquire(const Item& key_item,
-                                  Delegate<void, void*> ctor,
+                                  PDelegate<void, void*> ctor,
                                   uint64_t failure_cooldown) -> Item* {
     Base::iterator holder;
     Item* item = nullptr;
